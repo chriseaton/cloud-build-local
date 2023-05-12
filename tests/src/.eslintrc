@@ -1,0 +1,99 @@
+{
+    "env": {
+        "es6": true,
+        "jest": true,
+        "node": true,
+        "browser": true
+    },
+    "extends": [
+        "eslint:recommended"
+    ],
+    "globals": {
+    },
+    "plugins": [],
+    "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 1,
+                "maxBOF": 1,
+                "maxEOF": 1
+            }
+        ],
+        "no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "args": "none",
+                "ignoreRestSiblings": false,
+                "caughtErrors": "none"
+            }
+        ],
+        "no-console": [
+            "warn"
+        ],
+        "valid-jsdoc": [
+            "warn",
+            {
+                "requireReturnDescription": false,
+                "requireReturn": false,
+                "prefer": {
+                    "return": "returns",
+                    "virtual": "abstract"
+                },
+                "preferType": {
+                    "Boolean": "Boolean",
+                    "Number": "Number",
+                    "object": "Object",
+                    "String": "String"
+                }
+            }
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "require-jsdoc": [
+            "error",
+            {
+                "require": {
+                    "FunctionDeclaration": true,
+                    "MethodDefinition": true,
+                    "ClassDeclaration": true,
+                    "ArrowFunctionExpression": false,
+                    "FunctionExpression": true
+                }
+            }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
+    },
+    "overrides": [
+        {
+            "files": [
+                "**/__tests__/*.{j,t}s?(x)",
+                "**/tests/unit/**/*.spec.{j,t}s?(x)"
+            ],
+            "env": {
+                "jest": true
+            }
+        }
+    ]
+}

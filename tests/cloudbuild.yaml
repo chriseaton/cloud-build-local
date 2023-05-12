@@ -1,0 +1,14 @@
+steps:
+# Run npm steps
+- name: node
+  id: install
+  entrypoint: npm
+  args: ['install']
+- name: node
+  id: lint
+  entrypoint: npm
+  args: ['run', 'lint']
+- name: node
+  id: test
+  entrypoint: npm
+  args: ['test']
