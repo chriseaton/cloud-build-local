@@ -12,3 +12,11 @@ steps:
   id: test
   entrypoint: npm
   args: ['test']
+# - name: node
+#   id: build
+#   secretEnv: ['SOME_ENV']
+#   entrypoint: bash
+#   args:
+#     - -ceu
+#     - |
+#       echo '$$SOME_ENV'
