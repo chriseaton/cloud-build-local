@@ -2,3 +2,8 @@ cloud-build-local
 vendor/
 node_modules
 .env
+*.zip
+*.7z
+*.tar.gz
+*.tar.xz
+*.rpm

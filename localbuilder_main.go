@@ -54,7 +54,7 @@ const (
 
 var (
 	configFile      = flag.String("config", "cloudbuild.yaml", "File path of the config file")
-	envFile         = flag.String("env", ".env", "File path to an optional .env")
+	envFile         = flag.String("env", "", "File path to an optional .env")
 	substitutions   = flag.String("substitutions", "", `key=value pairs where the key is already defined in the build request; separate multiple substitutions with a comma, for example: _FOO=bar,_BAZ=baz`)
 	dryRun          = flag.Bool("dryrun", true, "Lints the config file and prints but does not run the commands; Local Builder runs the commands only when dryrun is set to false")
 	push            = flag.Bool("push", false, "Pushes the images to the registry")
@@ -145,13 +145,12 @@ func run(ctx context.Context, source string) error {
 	}
 	// Load specified env file.
 	var envMap map[string]string
-	if envFile != nil {
+	if envFile != nil && *envFile != "" {
 		var err error
 		if envMap, err = godotenv.Read(*envFile); err != nil {
 			return fmt.Errorf("Error loading env file: %v", err)
 		}
 	}
-	log.Printf("envMap: %+v", envMap)
 	// Load config file into a build struct.
 	buildConfig, err := config.Load(*configFile)
 	if err != nil {
@@ -166,7 +165,7 @@ func run(ctx context.Context, source string) error {
 					if index >= 0 {
 						s.Env = append(s.Env, fmt.Sprintf("%s=%s", k, v))
 						s.SecretEnv = slices.Delete(s.SecretEnv, index, index+1)
-						log.Printf("Found, Replaced: %s %v", s.Id, s)
+						log.Printf("Found secretEnv '%s' matching env file key and replaced it.", k)
 					}
 				}
 			}

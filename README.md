@@ -16,6 +16,7 @@ original, and maybe improve on it a bit.
 #### New Features
 - Add support for loading `.env` file secrets for `secretEnv` replacements.    
   This will convert only the matching `secretEnv` into a corresponding `env` with a value.    
+  To use this, just add the `--env=<envfilepath>` argument with `envfilepath` as the path to the `.env` file.    
   *This is not supported in the cloud, and only works for GCPL. Which means the cloud will simply treat a secretEnv as
   intended :)*
 - No contributor agreements. Just code!
@@ -25,7 +26,7 @@ To run a local build you should make sure you've got credentials to GCP if using
 then specify a `false` dryrun, the config, and the source code/content directory path.
 
 ```sh
-./cloud-build-local --dryrun=false --config=path/to/cloudbuild.yaml path/to/code
+./cloud-build-local --dryrun=false --config=path/to/cloudbuild.yaml --env=/path/to/.env path/to/code
 ```
 
 ## Development
