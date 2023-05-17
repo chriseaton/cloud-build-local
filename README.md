@@ -5,7 +5,7 @@ Local Builder is not 100% feature-compatible with the hosted Google Cloud Build 
 
 
 ### Community Fork
-This Cloud Build Local Builder (fork) is maintained by volunteers, which at best, makes this ok for a local debugging
+This Google Cloud Build Local (fork) is maintained by volunteers, which at best, makes this ok for a local debugging
 tool for Google Cloud Build. It does not support 100% feature parity with the hosted Cloud Build service and should
 not be used for production workloads. 
 
