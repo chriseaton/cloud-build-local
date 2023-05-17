@@ -1,5 +1,5 @@
 # Google Cloud Build Local
-**GCPL** runs [Google Cloud Build](https://cloud.google.com/cloud-build/) locally, allowing easier debugging,
+**GCBL** runs [Google Cloud Build](https://cloud.google.com/cloud-build/) locally, allowing easier debugging,
 execution of builds on your own hardware, and integration into local build and test workflows. *Please note that the 
 Local Builder is not 100% feature-compatible with the hosted Google Cloud Build service.*
 
@@ -17,7 +17,7 @@ original, and maybe improve on it a bit.
 - Add support for loading `.env` file secrets for `secretEnv` replacements.    
   This will convert only the matching `secretEnv` into a corresponding `env` with a value.    
   To use this, just add the `--env=<envfilepath>` argument with `envfilepath` as the path to the `.env` file.    
-  *This is not supported in the cloud, and only works for GCPL. Which means the cloud will simply treat a secretEnv as
+  *This is not supported in the cloud, and only works for GCBL. Which means the cloud will simply treat a secretEnv as
   intended :)*
 - No contributor agreements. Just code!
 
