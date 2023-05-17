@@ -13,7 +13,7 @@ As of 2023, the [original repository](https://github.com/GoogleCloudPlatform/clo
 Google has been archived. This fork is an attempt to keep the project alive, at least, in some form close to the
 original, and maybe improve on it a bit.
 
-The following features have been implemented:
+#### New Features
 - Add support for loading `.env` file secrets for `secretEnv` replacements.    
   This will convert only the matching `secretEnv` into a corresponding `env` with a value.    
   *This is not supported in the cloud, and only works for GCPL. Which means the cloud will simply treat a secretEnv as
@@ -33,6 +33,8 @@ To build and test the GCPL, you need a working
 [Go environment](https://golang.org/doc/install). You should also install
 [gcloud](https://cloud.google.com/sdk/docs/quickstarts) and
 [Docker](https://www.docker.com/).
+
+This binary has only been tested to work on Linux operating systems.
 
 ### Setup
 ```sh
