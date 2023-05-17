@@ -1,3 +1,4 @@
 cloud-build-local
 vendor/
 node_modules
+.env

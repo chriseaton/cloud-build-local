@@ -28,10 +28,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/afero"
+	"golang.org/x/exp/slices"
+
 	computeMetadata "cloud.google.com/go/compute/metadata"
-	"golang.org/x/oauth2"
 	"github.com/pborman/uuid"
+	"github.com/spf13/afero"
+	"golang.org/x/oauth2"
 
 	"github.com/GoogleCloudPlatform/cloud-build-local/build"
 	"github.com/GoogleCloudPlatform/cloud-build-local/common"
@@ -41,6 +43,7 @@ import (
 	"github.com/GoogleCloudPlatform/cloud-build-local/runner"
 	"github.com/GoogleCloudPlatform/cloud-build-local/validate"
 	"github.com/GoogleCloudPlatform/cloud-build-local/volume"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -51,6 +54,7 @@ const (
 
 var (
 	configFile      = flag.String("config", "cloudbuild.yaml", "File path of the config file")
+	envFile         = flag.String("env", ".env", "File path to an optional .env")
 	substitutions   = flag.String("substitutions", "", `key=value pairs where the key is already defined in the build request; separate multiple substitutions with a comma, for example: _FOO=bar,_BAZ=baz`)
 	dryRun          = flag.Bool("dryrun", true, "Lints the config file and prints but does not run the commands; Local Builder runs the commands only when dryrun is set to false")
 	push            = flag.Bool("push", false, "Pushes the images to the registry")
@@ -63,7 +67,7 @@ var (
 )
 
 func exitUsage(msg string) {
-	log.Fatalf("%s\nUsage: %s --config=cloudbuild.yaml [--substitutions=_FOO=bar] [--dryrun=true/false] [--push=true/false] [--bind-mount-source=true/false] source", msg, os.Args[0])
+	log.Fatalf("%s\nUsage: %s --config=cloudbuild.yaml [--env=/path/to/.env] [--substitutions=_FOO=bar] [--dryrun=true/false] [--push=true/false] [--bind-mount-source=true/false] source", msg, os.Args[0])
 }
 
 func main() {
@@ -139,11 +143,34 @@ func run(ctx context.Context, source string) error {
 			log.Printf("Warning: The client docker version installed (%s) is different from the one used in GCB (%s)", dockerClientVersion, gcbDockerVersion)
 		}
 	}
-
+	// Load specified env file.
+	var envMap map[string]string
+	if envFile != nil {
+		var err error
+		if envMap, err = godotenv.Read(*envFile); err != nil {
+			return fmt.Errorf("Error loading env file: %v", err)
+		}
+	}
+	log.Printf("envMap: %+v", envMap)
 	// Load config file into a build struct.
 	buildConfig, err := config.Load(*configFile)
 	if err != nil {
 		return fmt.Errorf("Error loading config file: %v", err)
+	}
+	// Replace .env secrets
+	if len(envMap) > 0 && len(buildConfig.Steps) > 0 {
+		for _, s := range buildConfig.Steps {
+			if len(s.SecretEnv) > 0 {
+				for k, v := range envMap {
+					index := slices.Index(s.SecretEnv, k)
+					if index >= 0 {
+						s.Env = append(s.Env, fmt.Sprintf("%s=%s", k, v))
+						s.SecretEnv = slices.Delete(s.SecretEnv, index, index+1)
+						log.Printf("Found, Replaced: %s %v", s.Id, s)
+					}
+				}
+			}
+		}
 	}
 	// When the build is run locally, there will be no build ID. Assign a unique value.
 	buildConfig.Id = "localbuild_" + uuid.New()
