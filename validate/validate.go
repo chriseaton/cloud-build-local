@@ -26,10 +26,10 @@ import (
 	"time"
 	"unicode"
 
-	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/GoogleCloudPlatform/cloud-build-local/subst"
 	"github.com/docker/distribution/reference"
+	"github.com/golang/protobuf/ptypes"
+	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
 const (
@@ -38,12 +38,12 @@ const (
 	// MaxTimeout is the maximum allowable timeout for a build or build step.
 	MaxTimeout = 24 * time.Hour
 
-	maxNumSteps       = 100  // max number of steps.
-	maxStepNameLength = 1000 // max length of step name.
-	maxNumEnvs        = 100  // max number of envs per step.
-	maxEnvLength      = 1000 // max length of env value.
-	maxNumArgs        = 100  // max number of args per step.
-	
+	maxNumSteps       = 100   // max number of steps.
+	maxStepNameLength = 1000  // max length of step name.
+	maxNumEnvs        = 100   // max number of envs per step.
+	maxEnvLength      = 65536 // max length of env value.
+	maxNumArgs        = 100   // max number of args per step.
+
 	maxArgLength = 4000 // max length of arg value.
 	maxDirLength = 1000 // max length of dir value.
 	maxNumImages = 100  // max number of images.
@@ -357,7 +357,6 @@ func CheckArtifacts(b *pb.Build) error {
 		}
 	}
 
-	
 	if len(b.GetArtifacts().GetImages()) > 0 {
 		b.Images = b.GetArtifacts().GetImages()
 	}
@@ -619,7 +618,7 @@ func checkEnvVars(b *pb.Build) error {
 	// build step local env vars
 	for i, s := range b.GetSteps() {
 		if err := runCommonEnvChecks(s.GetEnv()); err != nil {
-			return fmt.Errorf("invalid .steps.env field: build step %d %v", i, maxNumEnvs)
+			return fmt.Errorf("invalid .steps.env field: build step %d %v", i, err)
 
 		}
 	}
