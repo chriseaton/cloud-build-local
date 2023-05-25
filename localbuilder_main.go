@@ -165,7 +165,7 @@ func run(ctx context.Context, source string) error {
 					if index >= 0 {
 						s.Env = append(s.Env, fmt.Sprintf("%s=%s", k, strings.ReplaceAll(v, "\n", "\\n")))
 						s.SecretEnv = slices.Delete(s.SecretEnv, index, index+1)
-						log.Printf("Found secretEnv '%s' matching env file key and replaced it.", k)
+						log.Printf("Step \"%s\": Found secretEnv '%s' matching env file key and replaced it.", s.Id, k)
 					}
 				}
 			}
