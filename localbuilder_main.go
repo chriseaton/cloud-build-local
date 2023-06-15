@@ -60,6 +60,7 @@ var (
 	push            = flag.Bool("push", false, "Pushes the images to the registry")
 	noSource        = flag.Bool("no-source", false, "Prevents Local Builder from using source for this build")
 	noCloud         = flag.Bool("no-cloud", false, "Skip usage and checks for an active Google Cloud project/environment.")
+	noCloudPID      = flag.String("no-cloud-pid", "", "Optionally specify a Google Cloud project ID to be emulated when using the --no-cloud argument.")
 	bindMountSource = flag.Bool("bind-mount-source", false, "Bind mounts the source directory under /workspace rather "+
 		" than copying its contents into /workspace. It is an error to use this flag with --noSource")
 	writeWorkspace = flag.String("write-workspace", "", "Copies the workspace directory to this host directory")
@@ -177,13 +178,24 @@ func run(ctx context.Context, source string) error {
 
 	// Get the ProjectId to feed both the build and the metadata server.
 	// This command uses a runner without dryrun to return the real project.
-	projectInfo, err := gcloud.ProjectInfo(ctx, &runner.RealRunner{})
-	if err != nil {
-		log.Printf("Warning: Could not get project information from gcloud: %v", err)
+	var projectInfo metadata.ProjectInfo
+	if *noCloud {
+		projectInfo = metadata.ProjectInfo{
+			ProjectID:  "emulated-project",
+			ProjectNum: 1,
+		}
+		if *noCloudPID != "" {
+			projectInfo.ProjectID = *noCloudPID
+			log.Printf("Emulating project ID: %s", *noCloudPID)
+		}
 	} else {
-		buildConfig.ProjectId = projectInfo.ProjectID
+		projectInfo, err = gcloud.ProjectInfo(ctx, &runner.RealRunner{})
+		if err != nil {
+			log.Printf("Warning: Could not get project information from gcloud: %v", err)
+		} else {
+			buildConfig.ProjectId = projectInfo.ProjectID
+		}
 	}
-
 	substMap := make(map[string]string)
 	if *substitutions != "" {
 		substMap, err = common.ParseSubstitutionsFlag(*substitutions)
