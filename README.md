@@ -14,12 +14,14 @@ Google has been archived. This fork is an attempt to keep the project alive, at 
 original, and maybe improve on it a bit.
 
 #### New Features
-- Add support for loading `.env` file secrets for `secretEnv` replacements.    
+- Added support for loading `.env` file secrets for `secretEnv` replacements.    
   This will convert only the matching `secretEnv` into a corresponding `env` with a value.    
   To use this, just add the `--env=<envfilepath>` argument with `envfilepath` as the path to the `.env` file.    
   *This is not supported in the cloud, and only works for GCBL. Which means the cloud will simply treat a secretEnv as
   intended :)*
 - No contributor agreements. Just code!
+- Added support for skipping cloud token gathering and metadata with argument `--no-cloud`. This let's you run
+  cloud-build-local *without* an active `gcloud` authentication token (which requires a GCP account).
 
 ## Usage
 To run a local build you should make sure you've got credentials to GCP if using any resources (`gcloud auth login`),

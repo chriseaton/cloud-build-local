@@ -59,6 +59,7 @@ var (
 	dryRun          = flag.Bool("dryrun", true, "Lints the config file and prints but does not run the commands; Local Builder runs the commands only when dryrun is set to false")
 	push            = flag.Bool("push", false, "Pushes the images to the registry")
 	noSource        = flag.Bool("no-source", false, "Prevents Local Builder from using source for this build")
+	noCloud         = flag.Bool("no-cloud", false, "Skip usage and checks for an active Google Cloud project/environment.")
 	bindMountSource = flag.Bool("bind-mount-source", false, "Bind mounts the source directory under /workspace rather "+
 		" than copying its contents into /workspace. It is an error to use this flag with --noSource")
 	writeWorkspace = flag.String("write-workspace", "", "Copies the workspace directory to this host directory")
@@ -131,7 +132,7 @@ func run(ctx context.Context, source string) error {
 	}
 
 	// Check installed docker versions.
-	if !*dryRun {
+	if !*dryRun && !*noCloud {
 		dockerServerVersion, dockerClientVersion, err := dockerVersions(ctx, r)
 		if err != nil {
 			return fmt.Errorf("Error getting local docker versions: %v", err)
@@ -243,28 +244,9 @@ func run(ctx context.Context, source string) error {
 	cancelableCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	if !*dryRun {
-		// Set initial Docker credentials.
-		tok, err := gcloud.AccessToken(ctx, r)
-		if err != nil {
-			return fmt.Errorf("Error getting access token to set docker credentials: %v", err)
-		}
-		if err := b.SetDockerAccessToken(ctx, tok.AccessToken); err != nil {
-			return fmt.Errorf("Error setting docker credentials: %v", err)
-		}
-		b.TokenSource = oauth2.StaticTokenSource(&oauth2.Token{
-			AccessToken: tok.AccessToken,
-		})
-
-		// On GCE, do not create a spoofed metadata server, use the existing one.
-		// The cloudbuild network is still needed, with a private subnet.
 		var mdTokenSetter metadataTokenSetter
-		if computeMetadata.OnGCE() {
-			if err := metadata.CreateCloudbuildNetwork(ctx, r, "172.22.0.0/16"); err != nil {
-				return fmt.Errorf("Error creating network: %v", err)
-			}
-			defer metadata.CleanCloudbuildNetwork(ctx, r)
-			mdTokenSetter = nopTokenSetter{}
-		} else {
+		if *noCloud {
+			//start spoofed metadata server
 			if err := metadata.StartLocalServer(ctx, r, metadataImageName); err != nil {
 				return fmt.Errorf("Failed to start spoofed metadata server: %v", err)
 			}
@@ -275,38 +257,71 @@ func run(ctx context.Context, source string) error {
 			// Feed the project info to the metadata server.
 			metadataUpdater.SetProjectInfo(ctx, projectInfo)
 			mdTokenSetter = metadataUpdater
-		}
-
-		// Keep credentials up-to-date.
-		go func(ctx context.Context, tok *metadata.Token) {
-			var refresh time.Duration
-			for {
-				select {
-				case <-time.After(refresh):
-				case <-ctx.Done():
-					return
-				}
-				tok, err := gcloud.AccessToken(ctx, r)
-				if err != nil {
-					log.Printf("Error getting gcloud token: %v", err)
-					continue
-				}
-
-				// Supply token to the metadata server.
-				if err := mdTokenSetter.SetToken(ctx, tok); err != nil {
-					log.Printf("Error updating token in metadata server: %v", err)
-				}
-
-				// Keep a fresh token in ~/.docker/config.json, which in turn is
-				// available to build steps.  Note that use of `gcloud auth` to switch
-				// accounts mid-build is not supported.
-				if err := b.UpdateDockerAccessToken(ctx, tok.AccessToken); err != nil {
-					log.Printf("Error updating docker credentials: %v", err)
-				}
-				b.TokenSource = oauth2.StaticTokenSource(&oauth2.Token{AccessToken: tok.AccessToken})
-				refresh = common.RefreshDuration(tok.Expiry)
+		} else {
+			// Set initial Docker credentials.
+			tok, err := gcloud.AccessToken(ctx, r)
+			if err != nil {
+				return fmt.Errorf("Error getting access token to set docker credentials: %v", err)
 			}
-		}(cancelableCtx, tok)
+			if err := b.SetDockerAccessToken(ctx, tok.AccessToken); err != nil {
+				return fmt.Errorf("Error setting docker credentials: %v", err)
+			}
+			b.TokenSource = oauth2.StaticTokenSource(&oauth2.Token{
+				AccessToken: tok.AccessToken,
+			})
+
+			// On GCE, do not create a spoofed metadata server, use the existing one.
+			// The cloudbuild network is still needed, with a private subnet.
+			if computeMetadata.OnGCE() {
+				if err := metadata.CreateCloudbuildNetwork(ctx, r, "172.22.0.0/16"); err != nil {
+					return fmt.Errorf("Error creating network: %v", err)
+				}
+				defer metadata.CleanCloudbuildNetwork(ctx, r)
+				mdTokenSetter = nopTokenSetter{}
+			} else {
+				if err := metadata.StartLocalServer(ctx, r, metadataImageName); err != nil {
+					return fmt.Errorf("Failed to start spoofed metadata server: %v", err)
+				}
+				log.Println("Started spoofed metadata server")
+				metadataUpdater := metadata.RealUpdater{Local: true}
+				defer metadataUpdater.Stop(ctx, r)
+
+				// Feed the project info to the metadata server.
+				metadataUpdater.SetProjectInfo(ctx, projectInfo)
+				mdTokenSetter = metadataUpdater
+			}
+
+			// Keep credentials up-to-date.
+			go func(ctx context.Context, tok *metadata.Token) {
+				var refresh time.Duration
+				for {
+					select {
+					case <-time.After(refresh):
+					case <-ctx.Done():
+						return
+					}
+					tok, err := gcloud.AccessToken(ctx, r)
+					if err != nil {
+						log.Printf("Error getting gcloud token: %v", err)
+						continue
+					}
+
+					// Supply token to the metadata server.
+					if err := mdTokenSetter.SetToken(ctx, tok); err != nil {
+						log.Printf("Error updating token in metadata server: %v", err)
+					}
+
+					// Keep a fresh token in ~/.docker/config.json, which in turn is
+					// available to build steps.  Note that use of `gcloud auth` to switch
+					// accounts mid-build is not supported.
+					if err := b.UpdateDockerAccessToken(ctx, tok.AccessToken); err != nil {
+						log.Printf("Error updating docker credentials: %v", err)
+					}
+					b.TokenSource = oauth2.StaticTokenSource(&oauth2.Token{AccessToken: tok.AccessToken})
+					refresh = common.RefreshDuration(tok.Expiry)
+				}
+			}(cancelableCtx, tok)
+		}
 	}
 
 	b.Start(ctx)
