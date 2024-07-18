@@ -1,0 +1,42 @@
+steps:
+# Run npm steps
+- name: node
+  id: install
+  env:
+    - NODE_ENV=production
+  entrypoint: bash
+  args:
+    - -ceu
+    - |
+      npm ci
+      npm test
+# Deploy function to Google cloud functions
+- name: gcr.io/google.com/cloudsdktool/cloud-sdk
+  id: cloud function
+  entrypoint: bash
+  # Be sure to replace <...> argument values and adjust to your needs.
+  # See: https://cloud.google.com/functions/docs/create-deploy-gcloud
+  args:
+    - -ceu
+    - |
+      echo "Deploying function to google cloud: $$GOOGLE_PROJECT_NAME"
+      echo "$$GOOGLE_KEY_JSON_CONTENT" > /tmp/keyfile.json
+      gcloud auth activate-service-account --key-file /tmp/keyfile.json
+      gcloud functions deploy \
+        git-webhook-processor \
+        --project="$$GOOGLE_PROJECT_NAME" \
+        --allow-unauthenticated \
+        --source=. \
+        --runtime=nodejs20 \
+        --region=<my fav gcp region> \
+        --gen2 \
+        --trigger-http \
+        --timeout=15s \
+        --min-instances=0 \
+        --max-instances=1 \
+        --memory=256Mi \
+        --update-secrets=<env name for runtime>=<some secret path>:latest \
+  #CBL will turn the following into "env" entries with values using your .env
+  secretEnv: 
+    - GOOGLE_KEY_JSON_CONTENT
+    - GOOGLE_PROJECT_NAME
