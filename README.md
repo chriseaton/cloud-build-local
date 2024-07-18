@@ -32,8 +32,20 @@ See our example node.js GCP function in the `samples/` directory which includes 
   cloud-build-local *without* an active `gcloud` authentication token (which requires a GCP account).
 
 ## Usage
+1. You'll need to make sure your system has [docker installed](https://www.docker.com/).
+2. Grab the latest [release](https://github.com/chriseaton/cloud-build-local/releases) or build from source.
+3. Install into your system. Here's an easy way to do it:
+   ```
+   unzip <release>.zip
+   sudo chown root: ./cloud-build-local
+   sudo chmod u+x,g+x,o+x ./cloud-build-local
+   sudo mv ./cloud-build-local /usr/bin/
+   ```
+4. Get started using GCBL!
+
 To run a local build you should make sure you've got credentials to GCP if using any resources (`gcloud auth login`),
-then specify a `false` dryrun, the config, and the source code/content directory path.
+then specify a `false` dryrun, the config, and the source code/content directory path. If you don't have a Google
+Cloud login, then use the `--no-cloud` argument.
 
 ```sh
 ./cloud-build-local --dryrun=false --config=path/to/cloudbuild.yaml --env=/path/to/.env path/to/code
