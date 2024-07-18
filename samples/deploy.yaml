@@ -36,7 +36,7 @@ steps:
         --max-instances=1 \
         --memory=256Mi \
         --update-secrets=<env name for runtime>=<some secret path>:latest \
-  #CBL will turn the following into "env" entries with values using your .env
+  #GCBL will turn the following into "env" entries with values using your .env
   secretEnv: 
     - GOOGLE_KEY_JSON_CONTENT
     - GOOGLE_PROJECT_NAME

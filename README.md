@@ -13,6 +13,14 @@ As of 2023, the [original repository](https://github.com/GoogleCloudPlatform/clo
 Google has been archived. This fork is an attempt to keep the project alive, at least, in some form close to the
 original, and maybe improve on it a bit.
 
+#### Sample Node.js Application
+See our example node.js GCP function in the `samples/` directory which includes an example pipeline.
+
+> [!TIP]
+> See also: [Google Cloud Build File Schema](https://cloud.google.com/build/docs/build-config-file-schema)
+> GCBL maintains parity with syntax and format, so you can leverage the official documentation to construct your
+> deployment pipelines (`*.yaml` files).
+
 #### New Features
 - Added support for loading `.env` file secrets for `secretEnv` replacements.    
   This will convert only the matching `secretEnv` into a corresponding `env` with a value.    
