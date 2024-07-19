@@ -12,7 +12,7 @@ Google has been archived. This fork is an attempt to keep the project alive, at 
 original, and maybe improve on it a bit.
 
 > [!NOTE]
-> Cloud Build Local works without Google Cloud!    
+> Cloud Build Local works *without Google Cloud*!    
 > You can create pipelines as you see fit, locally, and yes, offline!    
 > Check out the §New Features below regarding the `--no-cloud` argument.
 
