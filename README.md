@@ -11,6 +11,11 @@ As of 2023, the [original repository](https://github.com/GoogleCloudPlatform/clo
 Google has been archived. This fork is an attempt to keep the project alive, at least, in some form close to the
 original, and maybe improve on it a bit.
 
+> [!NOTE]
+> Cloud Build Local works without Google Cloud!    
+> You can create pipelines as you see fit, locally, and yes, offline!    
+> Check out the §New Features below regarding the `--no-cloud` argument.
+
 ### Samples
 See our example node.js GCP function in the `samples/` directory which includes an example pipeline.
 
