@@ -1,19 +1,16 @@
 # Google Cloud Build Local
 **GCBL** runs [Google Cloud Build](https://cloud.google.com/cloud-build/) locally, allowing easier debugging,
-execution of builds on your own hardware, and integration into local build and test workflows. *Please note that the 
-Local Builder is not 100% feature-compatible with the hosted Google Cloud Build service.*
-
+execution of builds on your own hardware, and integration into local build and test workflows. 
 
 ### Community Fork
 This Google Cloud Build Local fork is maintained by volunteers, which at best, makes this ok for a local debugging
-tool for Google Cloud Build. It does not support 100% feature parity with the hosted Cloud Build service and should
-not be used for production workloads. 
+tool for Google Cloud Build. 
 
 As of 2023, the [original repository](https://github.com/GoogleCloudPlatform/cloud-build-local) from 
 Google has been archived. This fork is an attempt to keep the project alive, at least, in some form close to the
 original, and maybe improve on it a bit.
 
-#### Sample Node.js Application
+### Samples
 See our example node.js GCP function in the `samples/` directory which includes an example pipeline.
 
 > [!TIP]
@@ -48,16 +45,21 @@ then specify a `false` dryrun, the config, and the source code/content directory
 Cloud login, then use the `--no-cloud` argument.
 
 ```sh
-./cloud-build-local --dryrun=false --config=path/to/cloudbuild.yaml --env=/path/to/.env path/to/code
+./cloud-build-local \
+  --dryrun=false \
+  --config=path/to/cloudbuild.yaml \
+  --env=/path/to/.env \
+  /path/to/app
 ```
 
 ## Development
-To build and test the GCPL, you need a working
+To build GCBL from source, and run tests, you need a working
 [Go environment](https://golang.org/doc/install). You should also install
 [gcloud](https://cloud.google.com/sdk/docs/quickstarts) and
 [Docker](https://www.docker.com/).
 
-This binary has only been tested to work on Linux operating systems.
+This binary has only been tested to work on Linux operating systems. Windows and Mac are currently unsupported,
+though community contributions are welcome in this area.
 
 ### Setup
 ```sh
