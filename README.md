@@ -24,7 +24,7 @@ See our example node.js GCP function in the `samples/` directory which includes 
 > GCBL maintains parity with syntax and format, so you can leverage the official documentation to construct your
 > deployment pipelines (`*.yaml` files).
 
-#### New Features
+### New Features
 - Added support for loading `.env` file secrets for `secretEnv` replacements.    
   This will convert only the matching `secretEnv` into a corresponding `env` with a value.    
   To use this, just add the `--env=<envfilepath>` argument with `envfilepath` as the path to the `.env` file.    
