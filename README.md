@@ -3,8 +3,9 @@
 execution of builds on your own hardware, and integration into local build and test workflows. 
 
 ### Community Fork
-This Google Cloud Build Local fork is maintained by volunteers, which at best, makes this ok for a local debugging
-tool for Google Cloud Build. 
+This Google Cloud Build Local fork is maintained by volunteers, so may not always maintain 100% parity with
+Google's Cloud Build service. Stability and compatibility are our primary goals. If you'd like to contribute, please
+feel free to put something together and submit a merge request!
 
 As of 2023, the [original repository](https://github.com/GoogleCloudPlatform/cloud-build-local) from 
 Google has been archived. This fork is an attempt to keep the project alive, at least, in some form close to the
