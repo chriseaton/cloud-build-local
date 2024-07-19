@@ -1,0 +1,17 @@
+{
+    "name": "@chriseaton/cloud-build-local-samples",
+    "private": true,
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "start": "node server.js",
+        "test": "echo \"Test test test\" && exit 0",
+        "deploy": "cloud-build-local --dryrun=false --config=./deploy.yaml --no-cloud --env=./example.env ."
+    },
+    "author": "chriseaton",
+    "description": "Sample node.js application using cloud-build-local",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "express": "^4.19.2"
+    }
+}

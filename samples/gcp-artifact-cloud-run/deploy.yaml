@@ -1,0 +1,69 @@
+steps:
+# Run npm steps
+- name: node
+  id: install
+  env:
+    - NODE_ENV=production
+  entrypoint: bash
+  args:
+    - -ceu
+    - |
+      npm ci
+# Build and deploy docker image to Google Cloud Artifact Registry (Docker Registry)
+- name: docker:24.0.7-dind-alpine3.18
+  id: docker build deploy
+  env:
+    - IMAGE=some-region-docker.pkg.dev/my-artifacts/my-image/app
+    - IMAGE_TAG=latest
+    - DOCKER_REGISTRY=some-region-docker.pkg.dev
+    - GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json
+  entrypoint: bash
+  # This uses the Google Standalone Credential Helper
+  # See: https://cloud.google.com/artifact-registry/docs/docker/authentication
+  args:
+    - -ceu
+    - |
+      apk add --update --no-cache -q curl tar gzip
+      echo "Installing Google Standalone Credential Helper..."
+      curl -fsSL "https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/download/v2.1.22/docker-credential-gcr_linux_amd64-2.1.22.tar.gz" \
+        | tar xz docker-credential-gcr \
+        && chmod +x docker-credential-gcr && mv docker-credential-gcr /usr/bin/
+      echo "$$GOOGLE_KEY_JSON_CONTENT" > /tmp/sa.json
+      chown 600 /tmp/sa.json
+      docker-credential-gcr configure-docker --registries="$$DOCKER_REGISTRY"
+      docker build -t "$$IMAGE:$$IMAGE_TAG" .
+      docker push -a "$$IMAGE"
+  secretEnv: 
+    - GOOGLE_KEY_JSON_CONTENT
+# Deploy function to Google cloud run
+- name: gcr.io/google.com/cloudsdktool/cloud-sdk
+  id: cloud run
+  env:
+    - IMAGE=some-region-docker.pkg.dev/my-artifacts/my-image/app
+    - IMAGE_TAG=latest
+  entrypoint: bash
+  # Be sure to replace <...> argument values and adjust to your needs.
+  # See: https://cloud.google.com/functions/docs/create-deploy-gcloud
+  args:
+    - -ceu
+    - |
+      echo "Deploying function to google cloud: $$GOOGLE_PROJECT_NAME"
+      echo "$$GOOGLE_KEY_JSON_CONTENT" > /tmp/sa.json
+      chown 600 /tmp/sa.json
+      gcloud auth activate-service-account --key-file /tmp/sa.json
+      gcloud config set project "$$GOOGLE_PROJECT_NAME"
+      gcloud run deploy \
+        my-cool-app \
+        --allow-unauthenticated \
+        --ingress=all\
+        --image="$$IMAGE:$$IMAGE_TAG" \
+        --region=<my fav gcp region> \
+        --set-env-vars "NODE_ENV=production,HOST=0.0.0.0" \
+        --min-instances=0 \
+        --max-instances=2 \
+        --cpu=1000m \
+        --memory=1024Mi
+  #GCBL will turn the following into "env" entries with values using your .env
+  secretEnv: 
+    - GOOGLE_KEY_JSON_CONTENT
+    - GOOGLE_PROJECT_NAME

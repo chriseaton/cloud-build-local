@@ -20,8 +20,9 @@ steps:
     - -ceu
     - |
       echo "Deploying function to google cloud: $$GOOGLE_PROJECT_NAME"
-      echo "$$GOOGLE_KEY_JSON_CONTENT" > /tmp/keyfile.json
-      gcloud auth activate-service-account --key-file /tmp/keyfile.json
+      echo "$$GOOGLE_KEY_JSON_CONTENT" > /tmp/sa.json
+      chown 600 /tmp/sa.json
+      gcloud auth activate-service-account --key-file /tmp/sa.json
       gcloud functions deploy \
         git-webhook-processor \
         --project="$$GOOGLE_PROJECT_NAME" \
