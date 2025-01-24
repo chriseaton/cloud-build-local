@@ -28,11 +28,7 @@ import (
 	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
-const (
-	listIds = `id1
-id2
-`
-)
+const listIds = "id1\nid2"
 
 type mockRunner struct {
 	mu           sync.Mutex
