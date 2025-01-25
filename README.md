@@ -7,7 +7,7 @@ This Google Cloud Build Local fork is maintained by volunteers, so may not alway
 Google's Cloud Build service. Stability and compatibility are our primary goals. If you'd like to contribute, please
 feel free to put something together and submit a merge request!
 
-As of 2023, the [original repository](https://github.com/MikeMoore63/cloud-build-local) from 
+As of 2023, the [original repository](https://github.com/GoogleCloudPlatform/cloud-build-local) from 
 Google has been archived. This fork is an attempt to keep the project alive, at least, in some form close to the
 original, and maybe improve on it a bit.
 
