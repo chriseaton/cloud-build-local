@@ -15,13 +15,13 @@
 package config
 
 import (
+	"github.com/go-test/deep"
+	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
+	//	"reflect"
 	"testing"
-
-	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
 func TestLoad(t *testing.T) {
@@ -32,14 +32,14 @@ func TestLoad(t *testing.T) {
 		want    *pb.Build
 		wantErr bool
 	}{{
-		desc: "happy case",
+		desc: "happy case 1",
 		content: `
 steps:
 - name: "gcr.io/my-project/my-builder"
   args:
   - "foo"
   - "bar"
- `,
+`,
 		want: &pb.Build{
 			Steps: []*pb.BuildStep{{
 				Name: "gcr.io/my-project/my-builder",
@@ -47,7 +47,7 @@ steps:
 			}},
 		},
 	}, {
-		desc: "happy case",
+		desc: "happy case 2",
 		content: `
 steps:
 - name: 'gcr.io/cloud-builders/docker'
@@ -90,8 +90,9 @@ foo: "bar"
 		} else if err == nil && tc.wantErr {
 			t.Errorf("%s: Load should have failed", tc.desc)
 		}
-		if !tc.wantErr && !reflect.DeepEqual(tc.want, got) {
-			t.Errorf("%s: Load failed to translate file in build proto: want %+v, got %+v", tc.desc, tc.want, got)
+		diff := deep.Equal(tc.want, got)
+		if !tc.wantErr && diff != nil {
+			t.Errorf("%s: Load failed to translate file in build proto: want %+v, got %+v diff is %v", tc.desc, tc.want, got, diff)
 		}
 	}
 }

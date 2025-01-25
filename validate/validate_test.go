@@ -25,7 +25,7 @@ import (
 	"time"
 
 	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
-	duration "github.com/golang/protobuf/ptypes/duration"
+	duration "google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
