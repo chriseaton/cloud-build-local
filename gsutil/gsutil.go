@@ -30,11 +30,11 @@ import (
 	"reflect"
 	"strings"
 
-	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
-	"github.com/GoogleCloudPlatform/cloud-build-local/logger"
-	"github.com/GoogleCloudPlatform/cloud-build-local/runner"
-	"github.com/spf13/afero"
+	"github.com/MikeMoore63/cloud-build-local/logger"
+	"github.com/MikeMoore63/cloud-build-local/runner"
 	"github.com/pborman/uuid"
+	"github.com/spf13/afero"
+	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
 const (
@@ -114,7 +114,7 @@ func (g RealHelper) UploadArtifacts(ctx context.Context, flags DockerFlags, src,
 
 	// Create a temp file for gsutil manifest. This manifest is used when making calls to "gsutil cp."
 	// The user should not see the gsutil manifest after the upload.
-	
+
 	f := fmt.Sprintf("manifest_%s.log", newUUID())
 
 	tmpfile, err := afero.TempFile(g.fs, flags.Tmpdir, f)
@@ -165,14 +165,14 @@ func (g RealHelper) UploadArtifactsManifest(ctx context.Context, flags DockerFla
 
 	// Remove any trailing forward slash in GCS bucket URL. GCS accepts URLs with or without a trailing slash.
 	// We don't want the path to have a double slash.
-	
+
 	b := strings.TrimSuffix(bucket, "/")
 	return strings.Join([]string{b, manifest}, "/"), nil
 }
 
 // createArtifactsManifest writes a list of ArtifactResult to a JSON manifest. The JSON manifest may be empty.
 func (g RealHelper) createArtifactsManifest(manifestPath string, results []*pb.ArtifactResult) error {
-	
+
 	f, err := g.fs.OpenFile(manifestPath, os.O_RDWR|os.O_CREATE, filemode)
 	if err != nil {
 		return err
@@ -213,7 +213,7 @@ func (g RealHelper) runGsutil(ctx context.Context, tag string, flags DockerFlags
 		// Set bash entrypoint.
 		// For reasons currently unknown, a bash entrypoint and a -c parameter is required for wildcarding.
 		// Otherwise, any gsutil arguments with wildcards will not expand. Enclosing the source in single quotes does not help.
-		
+
 		"--entrypoint", "bash"}
 	if flags.Tmpdir != "" {
 		// Mount the temporary directory.
@@ -232,7 +232,7 @@ func (g RealHelper) runGsutil(ctx context.Context, tag string, flags DockerFlags
 
 // getGeneration takes a GCS object URL as input and returns the URL with the generation number suffixed.
 func (g RealHelper) getGeneration(ctx context.Context, flags DockerFlags, url string) (string, error) {
-	
+
 	// If we uploaded a large amount of artifacts, we'd have to call this many times to get the generations of all these files.
 	// Moreover, if we wait after upload to check all the file generations, it's possible that the file can change.
 
@@ -270,7 +270,7 @@ func (g RealHelper) getGeneration(ctx context.Context, flags DockerFlags, url st
 // parseGsutilManifest parses the items of a gsutil cp manifest file. It returns a list of ArtifactResult corresponding to the files copied to GCS.
 // If any error or skip statuses are detected, it returns an error.
 func (g RealHelper) parseGsutilManifest(manifestPath string) ([]*pb.ArtifactResult, error) {
-	
+
 	f, err := g.fs.Open(manifestPath)
 	if err != nil {
 		return nil, fmt.Errorf("could not open %s: %v", manifestPath, err)
@@ -316,7 +316,6 @@ func (g RealHelper) parseGsutilManifest(manifestPath string) ([]*pb.ArtifactResu
 	}
 	return artifacts, nil
 }
-
 
 func (g RealHelper) runWithOptionalLogging(ctx context.Context, hasLogging bool, tag string, cmd []string) (string, error) {
 	var buf bytes.Buffer

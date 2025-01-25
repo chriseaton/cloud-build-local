@@ -20,7 +20,9 @@
 // the fixed IP 169.254.169.254.
 //
 // The GCE metadata service is documented here:
-//  https://cloud.google.com/compute/docs/storing-retrieving-metadata
+//
+//	https://cloud.google.com/compute/docs/storing-retrieving-metadata
+//
 // The imitation metadata service we run offers a subset of the true
 // metadata functionality, focused on providing credentials to client
 // libraries.
@@ -42,7 +44,7 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/GoogleCloudPlatform/cloud-build-local/runner"
+	"github.com/MikeMoore63/cloud-build-local/runner"
 )
 
 const (
