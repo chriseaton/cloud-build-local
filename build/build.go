@@ -35,17 +35,17 @@ import (
 	"time"
 
 	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
-	"github.com/golang/protobuf/ptypes"
+	// ptypes "google.golang.org/protobuf/types/known/durationpb"
 
 	"github.com/GoogleCloudPlatform/cloud-build-local/common"
 	"github.com/GoogleCloudPlatform/cloud-build-local/gsutil"
 	"github.com/GoogleCloudPlatform/cloud-build-local/logger"
 	"github.com/GoogleCloudPlatform/cloud-build-local/runner"
 	"github.com/GoogleCloudPlatform/cloud-build-local/volume"
-	"github.com/spf13/afero"
-	"google.golang.org/api/cloudkms/v1"
-	"golang.org/x/oauth2"
 	"github.com/pborman/uuid"
+	"github.com/spf13/afero"
+	"golang.org/x/oauth2"
+	"google.golang.org/api/cloudkms/v1"
 )
 
 const (
@@ -244,13 +244,7 @@ func (b *Build) Start(ctx context.Context) {
 
 	if b.Request.GetTimeout() != nil {
 		var timeout time.Duration
-		var err error
-		if timeout, err = ptypes.Duration(b.Request.GetTimeout()); err != nil {
-			// Note: we have previously validated the request timeout, so this error
-			// should never happen here.
-			b.FailBuild(fmt.Errorf("invalid timeout: %v", err))
-			return
-		}
+		timeout = b.Request.GetTimeout().AsDuration()
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, timeout)
 		defer cancel()
@@ -758,7 +752,7 @@ func (b *Build) dockerPush(ctx context.Context, tag string) ([]imageDigest, erro
 
 // runWithScrapedLogging executes the command and returns the output (stdin, stderr), with logging.
 func (b *Build) runWithScrapedLogging(ctx context.Context, logPrefix string, cmd []string) (string, error) {
-	
+
 	var buf bytes.Buffer
 	outWriter := io.MultiWriter(b.Log.MakeWriter(logPrefix+":STDOUT", -1, true), &buf)
 	errWriter := io.MultiWriter(b.Log.MakeWriter(logPrefix+":STDERR", -1, false), &buf)
@@ -768,7 +762,7 @@ func (b *Build) runWithScrapedLogging(ctx context.Context, logPrefix string, cmd
 
 // runAndScrape executes the command and returns the output (stdin, stderr), without logging.
 func (b *Build) runAndScrape(ctx context.Context, cmd []string) (string, error) {
-	
+
 	var buf bytes.Buffer
 	outWriter := io.Writer(&buf)
 	errWriter := io.Writer(&buf)
@@ -866,7 +860,6 @@ func (b *Build) GetKMSClient() (kms, error) {
 		return b.Kms, nil
 	}
 
-	
 	// automatically gets (and refreshes) credentials from the metadata server
 	// when spoofing metadata works by IP. Until then, we'll just fetch the token
 	// and pass it to all HTTP requests.
@@ -905,7 +898,7 @@ func (r realKMS) Decrypt(key, enc string) (string, error) {
 func (b *Build) timeAndRunStep(ctx context.Context, idx int, waitChans []chan struct{}, done chan<- struct{}, errors chan<- error) {
 	// Wait for preceding steps to finish before executing.
 	// If a preceding step fails, the context will cancel and waiting goroutines will die.
-	
+
 	for _, ch := range waitChans {
 		select {
 		case <-ch:
@@ -920,7 +913,7 @@ func (b *Build) timeAndRunStep(ctx context.Context, idx int, waitChans []chan st
 	var timeout time.Duration
 	if stepTimeout := b.Request.Steps[idx].GetTimeout(); stepTimeout != nil {
 		var err error
-		timeout, err = ptypes.Duration(stepTimeout)
+		timeout = stepTimeout.AsDuration()
 		// We have previously validated this stepTimeout duration, so this err should never happen.
 		if err != nil {
 			err = fmt.Errorf("step %d has invalid timeout %v: %v", idx, stepTimeout, err)
@@ -1195,7 +1188,7 @@ func (b *Build) runBuildSteps(ctx context.Context) error {
 	}()
 
 	// Create all the volumes referenced by all steps and defer cleanup.
-	
+
 	allVolumes := b.Request.GetOptions().GetVolumes()
 	for _, step := range b.Request.Steps {
 		allVolumes = append(allVolumes, step.GetVolumes()...)
@@ -1306,11 +1299,11 @@ func (b *Build) dockerRunArgs(stepDir, stepOutputDir string, idx int) []string {
 		// Makes the build step easier to kill when it fails.
 		"--name", fmt.Sprintf("step_%d", idx)}
 
-		args = append(args,
-			// Make sure the container uses the correct docker daemon.
-			"--volume", "/var/run/docker.sock:/var/run/docker.sock",
-			// Run in privileged mode.
-			"--privileged")
+	args = append(args,
+		// Make sure the container uses the correct docker daemon.
+		"--volume", "/var/run/docker.sock:/var/run/docker.sock",
+		// Run in privileged mode.
+		"--privileged")
 
 	args = append(args,
 		// Mount the project workspace.
@@ -1469,7 +1462,7 @@ func (b *Build) pushArtifacts(ctx context.Context) error {
 
 	// Only verify that the GCS bucket exists.
 	// If they specify a directory path in the bucket that doesn't exist, gsutil will create it for them.
-	
+
 	location := b.Request.Artifacts.Objects.Location
 	bucket := extractGCSBucket(location)
 	if err := b.gsutilHelper.VerifyBucket(ctx, bucket); err != nil {

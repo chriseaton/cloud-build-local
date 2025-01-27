@@ -17,13 +17,13 @@
 package config
 
 import (
-	"bytes"
+	//	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 
-	"github.com/golang/protobuf/jsonpb"
+	jsonpb "google.golang.org/protobuf/encoding/protojson"
 
 	"gopkg.in/yaml.v2"
 
@@ -91,7 +91,7 @@ func unmarshalBuildTemplate(content []byte) (*pb.Build, error) {
 	// reference the *first* field it finds that isn't in the proto, not an
 	// exhaustive list of all unknown fields.
 	var b pb.Build
-	if err := jsonpb.Unmarshal(bytes.NewReader(jb), &b); err != nil {
+	if err := jsonpb.Unmarshal(jb, &b); err != nil {
 		if err.Error() == "json: cannot unmarshal string into Go value of type []json.RawMessage" {
 			return &b, errors.New("repeated string fields containing one element must be specified like ['foo'], not 'foo'")
 		}

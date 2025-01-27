@@ -27,9 +27,9 @@ import (
 	"unicode"
 
 	"github.com/GoogleCloudPlatform/cloud-build-local/subst"
-	"github.com/docker/distribution/reference"
-	"github.com/golang/protobuf/ptypes"
+	"github.com/distribution/reference"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
+	// ptypes "google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
@@ -97,10 +97,7 @@ func CheckBuild(b *pb.Build) error {
 
 	var buildTimeout time.Duration
 	if b.Timeout != nil {
-		var err error
-		if buildTimeout, err = ptypes.Duration(b.Timeout); err != nil {
-			return fmt.Errorf("invalid timeout value: %v", err)
-		}
+		buildTimeout := b.Timeout.AsDuration()
 		if buildTimeout > MaxTimeout {
 			return fmt.Errorf("timeout exceeds the timeout limit of %v", MaxTimeout)
 		}
@@ -426,9 +423,8 @@ func CheckBuildSteps(steps []*pb.BuildStep, buildTimeout time.Duration) error {
 		}
 
 		if s.Timeout != nil {
-			if timeout, err := ptypes.Duration(s.Timeout); err != nil {
-				return fmt.Errorf("invalid .timeout in build step #%d: %v", i, err)
-			} else if timeout > MaxTimeout {
+			timeout := s.Timeout.AsDuration()
+			if timeout > MaxTimeout {
 				return fmt.Errorf("invalid .timeout in build step #%d: build step timeout %v exceeds the timeout limit of %v", i, timeout, MaxTimeout)
 			} else if timeout > buildTimeout {
 				return fmt.Errorf("invalid .timeout in build step #%d: build step timeout %v must be <= build timeout %v", i, timeout, buildTimeout)
