@@ -26,9 +26,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/MikeMoore63/cloud-build-local/runner"
-	"github.com/MikeMoore63/cloud-build-local/subst"
-	"github.com/MikeMoore63/cloud-build-local/validate"
+	"github.com/chriseaton/cloud-build-local/runner"
+	"github.com/chriseaton/cloud-build-local/subst"
+	"github.com/chriseaton/cloud-build-local/validate"
 	"golang.org/x/oauth2"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )

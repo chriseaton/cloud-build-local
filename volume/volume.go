@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/MikeMoore63/cloud-build-local/runner"
+	"github.com/chriseaton/cloud-build-local/runner"
 )
 
 const (

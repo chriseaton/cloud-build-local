@@ -1,5 +1,5 @@
 mkdir vendor || exit
-imports=$(go list -f '{{range .Imports}}{{printf "%s\n" .}}{{end}}' ./... | grep -v "github.com/MikeMoore63/cloud-build-local" )
+imports=$(go list -f '{{range .Imports}}{{printf "%s\n" .}}{{end}}' ./... | grep -v "github.com/chriseaton/cloud-build-local" )
 export GOPATH=$PWD/vendor
 set -x
 for import in $imports; do

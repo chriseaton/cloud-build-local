@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Package main runs the gcb local builder.
-package main // import "github.com/MikeMoore63/cloud-build-local"
+package main // import "github.com/chriseaton/cloud-build-local"
 
 import (
 	"bufio"
@@ -35,14 +35,14 @@ import (
 	"github.com/spf13/afero"
 	"golang.org/x/oauth2"
 
-	"github.com/MikeMoore63/cloud-build-local/build"
-	"github.com/MikeMoore63/cloud-build-local/common"
-	"github.com/MikeMoore63/cloud-build-local/config"
-	"github.com/MikeMoore63/cloud-build-local/gcloud"
-	"github.com/MikeMoore63/cloud-build-local/metadata"
-	"github.com/MikeMoore63/cloud-build-local/runner"
-	"github.com/MikeMoore63/cloud-build-local/validate"
-	"github.com/MikeMoore63/cloud-build-local/volume"
+	"github.com/chriseaton/cloud-build-local/build"
+	"github.com/chriseaton/cloud-build-local/common"
+	"github.com/chriseaton/cloud-build-local/config"
+	"github.com/chriseaton/cloud-build-local/gcloud"
+	"github.com/chriseaton/cloud-build-local/metadata"
+	"github.com/chriseaton/cloud-build-local/runner"
+	"github.com/chriseaton/cloud-build-local/validate"
+	"github.com/chriseaton/cloud-build-local/volume"
 	"github.com/joho/godotenv"
 )
 

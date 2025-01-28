@@ -30,8 +30,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/MikeMoore63/cloud-build-local/logger"
-	"github.com/MikeMoore63/cloud-build-local/runner"
+	"github.com/chriseaton/cloud-build-local/logger"
+	"github.com/chriseaton/cloud-build-local/runner"
 	"github.com/pborman/uuid"
 	"github.com/spf13/afero"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"

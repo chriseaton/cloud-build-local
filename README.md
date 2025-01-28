@@ -75,7 +75,7 @@ go get
 
 ### Build
 ```sh
-go build -o cloud-build-local github.com/MikeMoore63/cloud-build-local
+go build -o cloud-build-local github.com/GoogleCloud/cloud-build-local
 ```
 
 Optionally, create a system-wide link to the built executable:
@@ -96,5 +96,5 @@ If you'd like to run the manual test build...
 
 Other tests (legacy):
 ```sh
-go test $(go list github.com/MikeMoore63/cloud-build-local/... | grep -v vendor)
+go test $(go list github.com/chriseaton/cloud-build-local/... | grep -v vendor)
 ```

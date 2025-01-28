@@ -75,7 +75,7 @@ To run a build:
 ## Developing and contributing to the Local Builder
 
 See the
-[contributing instructions](https://github.com/MikeMoore63/cloud-build-local/blob/master/CONTRIBUTING.md).
+[contributing instructions](https://github.com/chriseaton/cloud-build-local/blob/master/CONTRIBUTING.md).
 
 ## Limitations
 

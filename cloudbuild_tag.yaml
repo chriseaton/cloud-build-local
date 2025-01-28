@@ -24,7 +24,7 @@ steps:
     for GOOS in darwin linux; do
         for GOARCH in 386 amd64; do
             # Build binary with the new tag and with 'latest'
-            GOOS=$$GOOS GOARCH=$$GOARCH /builder/bin/go.bash build -o cloud-build-local_$${GOOS}_$${GOARCH}-$TAG_NAME github.com/MikeMoore63/cloud-build-local
+            GOOS=$$GOOS GOARCH=$$GOARCH /builder/bin/go.bash build -o cloud-build-local_$${GOOS}_$${GOARCH}-$TAG_NAME github.com/chriseaton/cloud-build-local
         done
     done
     tar -czvf cloud-build-local_latest.tar.gz cloud-build-local_*
