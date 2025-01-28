@@ -36,7 +36,7 @@ See our example node.js GCP function in the `samples/` directory which includes 
 
 ## Usage
 1. You'll need to make sure your system has [docker installed](https://www.docker.com/).
-2. Grab the latest [release](https://github.com/chriseaton/cloud-build-local/releases) or build from source.
+2. Grab the latest [release](https://github.com/chriseaton/cloud-build-local/releases) or build from source or install with 'go install github.com/chriseaton/cloud-build-local' .
 3. Install into your system. Here's an easy way to do it:
    ```
    unzip <release>.zip
