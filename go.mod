@@ -1,4 +1,4 @@
-module github.com/GoogleCloudPlatform/cloud-build-local
+module github.com/chriseaton/cloud-build-local
 
 go 1.23
 

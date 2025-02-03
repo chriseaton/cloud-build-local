@@ -26,7 +26,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/GoogleCloudPlatform/cloud-build-local/subst"
+	"github.com/chriseaton/cloud-build-local/subst"
 	"github.com/distribution/reference"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 	// ptypes "google.golang.org/protobuf/types/known/durationpb"

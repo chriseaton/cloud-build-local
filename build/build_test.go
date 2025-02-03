@@ -33,8 +33,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/GoogleCloudPlatform/cloud-build-local/gsutil"
-	"github.com/GoogleCloudPlatform/cloud-build-local/runner"
+	"github.com/chriseaton/cloud-build-local/gsutil"
+	"github.com/chriseaton/cloud-build-local/runner"
 	"github.com/pborman/uuid"
 	"github.com/spf13/afero"
 	"golang.org/x/oauth2"
