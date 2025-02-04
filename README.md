@@ -75,7 +75,7 @@ go get
 
 ### Build
 ```sh
-go build -o cloud-build-local github.com/GoogleCloud/cloud-build-local
+go build -o cloud-build-local github.com/chriseaton/cloud-build-local
 ```
 
 Optionally, create a system-wide link to the built executable:
