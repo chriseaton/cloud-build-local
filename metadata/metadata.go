@@ -253,9 +253,9 @@ func (r RealUpdater) Ready(ctx context.Context) bool {
 func StartLocalServer(ctx context.Context, r runner.Runner, metadataImage string) error {
 	// Unlike the hosted Cloud Build service, the user's local machine is
 	// not guaranteed to have the latest version, so we explicitly pull it.
-	if err := r.Run(ctx, []string{"docker", "pull", metadataImage}, nil, os.Stdout, os.Stderr, ""); err != nil {
-		return err
-	}
+	// if err := r.Run(ctx, []string{"docker", "pull", metadataImage}, nil, os.Stdout, os.Stderr, ""); err != nil {
+	// 	return err
+	// }
 	return startServer(ctx, r, metadataImage, false, fixedMetadataIP, metadataLocalSubnet)
 }
 
@@ -299,9 +299,9 @@ func startServer(ctx context.Context, r runner.Runner, metadataImage string, ipt
 	var cmd []string
 	if !iptables {
 		// In the local builder, we need to expose the port but it's nice to avoid 80.
-		cmd = []string{"docker", "run", "-d", "-p=8082:80", "--name=metadata", metadataImage}
+		cmd = []string{"docker", "run", "-d", "--pull=missing", "-p=8082:80", "--name=metadata", metadataImage}
 	} else {
-		cmd = []string{"docker", "run", "-d", "--name=metadata", metadataImage}
+		cmd = []string{"docker", "run", "-d", "--pull=missing", "--name=metadata", metadataImage}
 	}
 	if err := r.Run(ctx, cmd, nil, nil, os.Stderr, ""); err != nil {
 		return err
